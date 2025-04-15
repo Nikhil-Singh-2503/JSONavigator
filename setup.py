@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="JSONavigator",
-    version="1.0.1",
+    name="jsonavigator",
+    version="1.0.2",
     author="Nikhil Singh",
     author_email="nikhilraj7654@gmail.com",
     description="A Python package for handling nested JSON structures.",
