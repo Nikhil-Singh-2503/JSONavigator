@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="JSONavigator",
-    version="1.0.0",
+    version="1.0.1",
     author="Nikhil Singh",
     author_email="nikhilraj7654@gmail.com",
     description="A Python package for handling nested JSON structures.",
