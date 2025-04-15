@@ -1,7 +1,7 @@
 
-# JSONinja
+# JSONavigator
 
-JSONinja is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, and formatting JSON paths, making it easier to handle complex data structures.
+JSONavigator is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, and formatting JSON paths, making it easier to handle complex data structures.
 
 
 ## **Features**
@@ -12,16 +12,16 @@ JSONinja is a Python package designed to simplify working with nested JSON struc
 - **Custom Exceptions**: Handle errors gracefully with custom exception classes.
 ## Installation
 
-You can install `Jsoninja` using `pip`:
+You can install `JSONavigator` using `pip`:
 
 ```bash
-  pip install jsoninja
+  pip install JSONavigator
 ```
 Alternatively, if you’re installing from source:
 
 ```bash
-git clone https://github.com/Nikhil-Singh-2503/JSONinja.git
-cd jsoninja
+git clone https://github.com/Nikhil-Singh-2503/JSONavigator.git
+cd JSONavigator
 ```
 Create Virtual envirnoment:
 ```bash
@@ -33,14 +33,14 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 ## Usage/Examples
-Here’s how you can use the various features of JSONinja:
+Here’s how you can use the various features of JSONavigator:
 
 **1. Traverse Nested JSON**
 
 Use the `traverse_json` function to recursively traverse a nested JSON structure and extract paths and values. 
 
 ```python
-from jsoninja.core import traverse_json
+from JSONavigator.core import traverse_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 
@@ -60,7 +60,7 @@ Path: a.c, Value: 3
 Use the `get_value_at_path` function to retrieve the value at a specific path in the JSON structure.
 
 ```python
-from jsoninja.core import get_value_at_path
+from JSONavigator.core import get_value_at_path
 
 data = {"a": {"b": [1, 2], "c": 3}}
 value = get_value_at_path(data, "a.b[1]")
@@ -75,7 +75,7 @@ print(value)  # Output: 2
 Use the `flatten_json` function to convert a nested JSON structure into a single-level dictionary.
 
 ```python
-from jsoninja.utils import flatten_json
+from JSONavigator.utils import flatten_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 flattened = flatten_json(data)
@@ -95,8 +95,8 @@ print(flattened)
 Use the `validate_path` function to ensure that a JSON path is properly formatted.
 
 ```python
-from jsoninja.utils import validate_path
-from jsoninja.exceptions import InvalidPathError
+from JSONavigator.utils import validate_path
+from JSONavigator.exceptions import InvalidPathError
 
 try:
     validate_path("a.b[1]")
@@ -112,7 +112,7 @@ True
 Use the `format_path` function to make JSON paths more readable.
 
 ```python
-from jsoninja.utils import format_path
+from JSONavigator.utils import format_path
 
 formatted_path = format_path("a.b[1]")
 print(formatted_path)
@@ -131,7 +131,7 @@ You can add your own seperator to each of the functions by passing value to a na
 Suppose if you want to use seperator with `traverse_json` function. 
 
 ```python
-from jsoninja.core import traverse_json
+from JSONavigator.core import traverse_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 
@@ -147,12 +147,12 @@ Path: a*c, Value: 3
 ```
 ## Contributing
 
-Contributions to JSONinja are welcome! To contribute: 
+Contributions to JSONavigator are welcome! To contribute: 
 
 - Fork the repository on GitHub.
 - Clone your fork locally:
 ```bash
-git clone https://github.com/Nikhil-Singh-2503/JSONinja.git
+git clone https://github.com/Nikhil-Singh-2503/JSONavigator.git
 ```
 - Create a new branch for your feature or bugfix:
 ```bash
@@ -180,7 +180,7 @@ To run the test suite, use `pytest`:
 ```
 For coverage reports, install `pytest-cov` and run:
 ```bash
-  pytest --cov=jsoninja
+  pytest --cov=JSONavigator
 ```
 ## License
 This project is licensed under the MIT License.
