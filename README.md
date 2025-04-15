@@ -40,7 +40,7 @@ Here’s how you can use the various features of JSONavigator:
 Use the `traverse_json` function to recursively traverse a nested JSON structure and extract paths and values. 
 
 ```python
-from JSONavigator.core import traverse_json
+from jsoninja.core import traverse_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 
@@ -60,7 +60,7 @@ Path: a.c, Value: 3
 Use the `get_value_at_path` function to retrieve the value at a specific path in the JSON structure.
 
 ```python
-from JSONavigator.core import get_value_at_path
+from jsoninja.core import get_value_at_path
 
 data = {"a": {"b": [1, 2], "c": 3}}
 value = get_value_at_path(data, "a.b[1]")
@@ -75,7 +75,7 @@ print(value)  # Output: 2
 Use the `flatten_json` function to convert a nested JSON structure into a single-level dictionary.
 
 ```python
-from JSONavigator.utils import flatten_json
+from jsoninja.utils import flatten_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 flattened = flatten_json(data)
@@ -95,8 +95,8 @@ print(flattened)
 Use the `validate_path` function to ensure that a JSON path is properly formatted.
 
 ```python
-from JSONavigator.utils import validate_path
-from JSONavigator.exceptions import InvalidPathError
+from jsoninja.utils import validate_path
+from jsoninja.exceptions import InvalidPathError
 
 try:
     validate_path("a.b[1]")
@@ -112,7 +112,7 @@ True
 Use the `format_path` function to make JSON paths more readable.
 
 ```python
-from JSONavigator.utils import format_path
+from jsoninja.utils import format_path
 
 formatted_path = format_path("a.b[1]")
 print(formatted_path)
@@ -131,7 +131,7 @@ You can add your own seperator to each of the functions by passing value to a na
 Suppose if you want to use seperator with `traverse_json` function. 
 
 ```python
-from JSONavigator.core import traverse_json
+from jsoninja.core import traverse_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 
