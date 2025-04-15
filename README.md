@@ -152,7 +152,7 @@ Contributions to JSONinja are welcome! To contribute:
 - Fork the repository on GitHub.
 - Clone your fork locally:
 ```bash
-git clone https://github.com/yourusername/jsoninja.git
+git clone https://github.com/Nikhil-Singh-2503/JSONinja.git
 ```
 - Create a new branch for your feature or bugfix:
 ```bash
