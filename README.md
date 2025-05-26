@@ -1,5 +1,5 @@
 
-# JSONavigator
+# JSONavigator  [![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator)
 
 JSONavigator is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, and formatting JSON paths, making it easier to handle complex data structures.
 
