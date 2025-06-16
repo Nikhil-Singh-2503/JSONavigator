@@ -21,7 +21,7 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Utilities",
         "Topic :: File Formats",
-        "Topic :: File Formats :: JSON"
+        "Topic :: File Formats :: JSON",
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules"
 
