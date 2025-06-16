@@ -1,7 +1,9 @@
 
-# JSONavigator  [![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator)
+# JSONavigator  [![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Nikhil-Singh-2503/JSONavigator/publish-to-pypi.yml)
 
-JSONavigator is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, and formatting JSON paths, making it easier to handle complex data structures.
+
+JSONavigator is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, formatting JSON paths and comparing JSONs. Streamline your JSON data processing tasks with ease and efficiency.
+
 
 
 ## **Features**
@@ -11,6 +13,7 @@ JSONavigator is a Python package designed to simplify working with nested JSON s
 - **Format Paths**: Improve readability of JSON paths by replacing separators with more user-friendly formats.
 - **Find Values**: Search for specific keys in nested JSON and retrieve their associated values.
 - **Empty All Values**: Replace all values in a nested JSON structure with empty strings.
+- **Compare JSON Files**: Compare two JSON files and identify differences in their structures and values.
 - **Custom Exceptions**: Handle errors gracefully with custom exception classes.
 ## Installation
 
@@ -162,7 +165,42 @@ print(emptied_data)
     "f": ["", {"g": ""}],
 }
 ```
+**8. Compare Two JSON Files**
 
+Use the `compare_files` function to compare two JSON files and identify differences in their structures and values. You can either pass loaded JSON objects or the paths to the JSON files. If you choose to pass file paths, set the `isPath` parameter to `True`.
+
+When using file paths, ensure to use `//` as the path separator, as `/` is treated as an escape character. Alternatively, you can use a raw formatted string (e.g., `r"path/to/file.json"`).
+
+The function returns two values:
+
+1. The actual changes found between the two JSON structures.
+2. A summary of the changes.
+
+*Example with Loaded JSON Objects:*
+
+```python
+from jsoninja.compare import compare_files
+
+json1 = {"a": {"b": 1, "c": 2}}
+json2 = {"a": {"b": 1, "c": 3}}
+
+changes, summary = compare_files(json1, json2)
+print("Changes:", changes)
+print("Summary:", summary)
+```
+*Example with File Paths:*
+
+```python
+from jsoninja.compare import compare_files
+# Use any one of the methods below for specifiying path
+file1_path = "path//to//first.json"  # Using // as the path separator
+file2_path = r"path/to/second.json"   # Using a raw formatted string
+
+changes, summary = compare_files(file1_path, file2_path, isPath=True)
+print("Changes:", changes)
+print("Summary:", summary)
+```
+In this case, ensure that the `isPath` parameter is set to `True` to indicate that you are passing file paths instead of loaded JSON objects
 
 ## **Customization**
 

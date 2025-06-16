@@ -13,30 +13,26 @@ def test_validate_path_valid():
     """
     assert validate_path("a.b[1]") == True
 
-
 def test_validate_path_invalid_type():
     """
     Test validating an invalid path type (not a string).
     """
     with pytest.raises(InvalidPathError, match="Path must be a string."):
-        validate_path(123)==False  # Path is not a string
-
+        validate_path(123)  # Path is not a string
 
 def test_validate_path_invalid_characters():
     """
     Test validating a path with invalid characters.
     """
     with pytest.raises(InvalidPathError, match="Invalid character '#' in path."):
-        validate_path("a.b#[1]")==False
-
+        validate_path("a.b#[1]")  # Invalid character
 
 def test_validate_path_mismatched_brackets():
     """
     Test validating a path with mismatched brackets.
     """
     with pytest.raises(InvalidPathError, match="Mismatched brackets in path."):
-        validate_path("a.b[1")==False
-
+        validate_path("a.b[1")  # Mismatched brackets
 
 # Test cases for format_path
 def test_format_path():
