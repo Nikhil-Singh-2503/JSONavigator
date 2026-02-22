@@ -1,5 +1,6 @@
 
-# JSONavigator  [![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Nikhil-Singh-2503/JSONavigator/publish-to-pypi.yml)
+# JSONavigator  
+[![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Nikhil-Singh-2503/JSONavigator/publish-to-pypi.yml) ![PyPI license](https://img.shields.io/pypi/l/jsonavigator) ![PyPI version](https://img.shields.io/pypi/v/jsonavigator) ![Repository Size](https://img.shields.io/github/repo-size/Nikhil-Singh-2503/Jsonavigator)
 
 
 JSONavigator is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, formatting JSON paths and comparing JSONs. Streamline your JSON data processing tasks with ease and efficiency.
