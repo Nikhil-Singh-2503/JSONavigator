@@ -1,52 +1,115 @@
+<div align="center">
 
-# JSONavigator  
-[![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Nikhil-Singh-2503/JSONavigator/publish-to-pypi.yml) ![PyPI license](https://img.shields.io/pypi/l/jsonavigator) ![PyPI version](https://img.shields.io/pypi/v/jsonavigator) ![Repository Size](https://img.shields.io/github/repo-size/Nikhil-Singh-2503/Jsonavigator)
+<h1>🧭 JSONavigator</h1>
 
+<p><strong>The Swiss Army knife for nested JSON</strong> — traverse, flatten, search, validate, format, and diff JSON structures with a single lightweight Python library.</p>
 
-JSONavigator is a Python package designed to simplify working with nested JSON structures. It provides utilities for traversing, flattening, validating, formatting JSON paths and comparing JSONs. Streamline your JSON data processing tasks with ease and efficiency.
+[![PyPI Downloads](https://static.pepy.tech/badge/jsonavigator)](https://pepy.tech/projects/jsonavigator)
+[![PyPI version](https://img.shields.io/pypi/v/jsonavigator?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/jsonavigator/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/jsonavigator?logo=python&logoColor=white)](https://pypi.org/project/jsonavigator/)
+[![License: MIT](https://img.shields.io/pypi/l/jsonavigator?color=green)](https://github.com/Nikhil-Singh-2503/JSONavigator/blob/main/LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/Nikhil-Singh-2503/JSONavigator/publish-to-pypi.yml?label=CI%2FCD&logo=github)](https://github.com/Nikhil-Singh-2503/JSONavigator/actions)
+[![Repo Size](https://img.shields.io/github/repo-size/Nikhil-Singh-2503/Jsonavigator)](https://github.com/Nikhil-Singh-2503/JSONavigator)
 
+</div>
 
+---
 
-## **Features**
-- **Traverse Nested JSON**: Recursively traverse dictionaries and lists to extract paths and values.
-- **Flatten JSON**: Convert nested JSON into a single-level dictionary for easier access.
-- **Validate Paths**: Ensure that JSON paths are properly formatted and valid.
-- **Format Paths**: Improve readability of JSON paths by replacing separators with more user-friendly formats.
-- **Find Values**: Search for specific keys in nested JSON and retrieve their associated values.
-- **Empty All Values**: Replace all values in a nested JSON structure with empty strings.
-- **Compare JSON Files**: Compare two JSON files and identify differences in their structures and values.
-- **Custom Exceptions**: Handle errors gracefully with custom exception classes.
-## Installation
+## 🤔 Why JSONavigator?
 
-You can install `JSONavigator` using `pip`:
+Working with deeply nested JSON in Python is painful. Standard `dict` access breaks on missing keys; `jmespath` has a custom query language to learn; `pandas` is overkill for simple lookups.
+
+**JSONavigator** solves this with a zero-dependency, pure-Python code that covers the whole lifecycle of nested JSON manipulation — from traversal to diffing — in a handful of intuitive functions.
+
+```
+4,000+ downloads  •  Zero dependencies  •  Python 3.8+  •  MIT Licensed
+```
+
+---
+
+## ✨ Features
+
+| Feature | Function | Description |
+|---|---|---|
+| 🔍 **Traverse** | `traverse_json` | Recursively yield every `(path, value)` pair |
+| 📦 **Flatten** | `flatten_json` | Collapse nested JSON into a single-level dict |
+| 🎯 **Get by path** | `get_value_at_path` | Retrieve a value using a dot-notation path |
+| 🔎 **Find value** | `find_value_of_element` | Search for first occurrence of a key, anywhere |
+| 🗺️ **Find all paths** | `find_all_paths_for_element` | Get every path where a key exists |
+| 🧹 **Clear values** | `empty_all_the_values` | Reset all leaf values to `""` in-place |
+| ✅ **Validate path** | `validate_path` | Assert a path string is well-formed |
+| 💅 **Format path** | `format_path` | Pretty-print a path for human readability |
+| 📊 **Compare JSON** | `compare_files` | Diff two JSON objects or files with a summary |
+| 🚨 **Custom exceptions** | `InvalidPathError`, `ElementNotFoundError` | Semantic error handling |
+
+---
+
+## 📦 Installation
 
 ```bash
-  pip install JSONavigator
+pip install jsonavigator
 ```
-Alternatively, if you’re installing from source:
+
+**From source:**
 
 ```bash
 git clone https://github.com/Nikhil-Singh-2503/JSONavigator.git
 cd JSONavigator
-```
-Create Virtual envirnoment:
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-Install the requirements:
-```bash
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
-## Usage/Examples
-Here’s how you can use the various features of JSONavigator:
 
-**1. Traverse Nested JSON**
+> **Requires:** Python ≥ 3.8. No runtime dependencies.
 
-Use the `traverse_json` function to recursively traverse a nested JSON structure and extract paths and values. 
+---
+
+## ⚡ Quick Start
 
 ```python
-from jsoninja.core import traverse_json
+from jsoninja import (
+    traverse_json,
+    get_value_at_path,
+    flatten_json,
+    find_value_of_element,
+    find_all_paths_for_element,
+    empty_all_the_values,
+    validate_path,
+    format_path,
+    compare_files,
+)
+
+data = {
+    "user": {
+        "name": "Alice",
+        "scores": [95, 87, 100],
+        "address": {"city": "Berlin", "zip": "10115"}
+    }
+}
+
+# Traverse every leaf
+for path, value in traverse_json(data):
+    print(f"{path}: {value}")
+# user.name: Alice
+# user.scores[0]: 95  ...
+
+# Retrieve by path
+print(get_value_at_path(data, "user.address.city"))  # Berlin
+
+# Flatten to single level
+flat = flatten_json(data)
+# {"user.name": "Alice", "user.scores[0]": 95, ...}
+```
+
+---
+
+## 📖 Usage Guide
+
+### 1️⃣ Traverse Nested JSON
+
+Yields `(path, value)` tuples for every leaf node. Supports mixed dicts and lists.
+
+```python
+from jsoninja import traverse_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
 
@@ -54,232 +117,345 @@ for path, value in traverse_json(data):
     print(f"Path: {path}, Value: {value}")
 ```
 
-**Output**
 ```
 Path: a.b[0], Value: 1
 Path: a.b[1], Value: 2
-Path: a.c, Value: 3 
+Path: a.c, Value: 3
 ```
 
-**2. Get Value at a Specific Path**
+> Use the `separator` parameter to change the default `.` delimiter.
+>
+> ```python
+> traverse_json(data, separator="/")  # a/b[0], a/b[1], a/c
+> ```
 
-Use the `get_value_at_path` function to retrieve the value at a specific path in the JSON structure.
+---
+
+### 2️⃣ Get Value at a Specific Path
 
 ```python
-from jsoninja.core import get_value_at_path
+from jsoninja import get_value_at_path
 
-data = {"a": {"b": [1, 2], "c": 3}}
-value = get_value_at_path(data, "a.b[1]")
-print(value)  # Output: 2
+data = {"a": {"b": [10, 20, 30]}}
+
+print(get_value_at_path(data, "a.b[2]"))   # 30
+print(get_value_at_path(data, "a.b[0]"))   # 10
 ```
 
-**Output**   
-`2`
+---
 
-**3. Flatten JSON**
+### 3️⃣ Flatten JSON
 
-Use the `flatten_json` function to convert a nested JSON structure into a single-level dictionary.
+Collapses any depth of nesting into a flat `{path: value}` dictionary.
 
 ```python
-from jsoninja.utils import flatten_json
+from jsoninja import flatten_json
 
 data = {"a": {"b": [1, 2], "c": 3}}
-flattened = flatten_json(data)
-print(flattened)
+print(flatten_json(data))
 ```
 
-**Output**   
-```
+```python
 {
     "a.b[0]": 1,
     "a.b[1]": 2,
     "a.c": 3
 }
 ```
-**4. Validate JSON Paths**
 
-Use the `validate_path` function to ensure that a JSON path is properly formatted.
+---
 
-```python
-from jsoninja.utils import validate_path
-from jsoninja.exceptions import InvalidPathError
+### 4️⃣ Find a Value by Key
 
-try:
-    validate_path("a.b[1]")
-except InvalidPathError as e:
-    print(f"Invalid path: {e}")
-```
-**Output**   
-```
-True
-```
-**5. Format JSON Paths**
-
-Use the `format_path` function to make JSON paths more readable.
+Returns the first occurrence of a key anywhere in the structure.
 
 ```python
-from jsoninja.utils import format_path
-
-formatted_path = format_path("a.b[1]")
-print(formatted_path)
-```
-**Output**   
-```
-a -> b[1]
-```
-
-**6. Find Value of an Element**
-Use the `find_value_of_element` function to search for a specific key in a nested JSON structure and retrieve its associated value. If the key is not found, the function returns an empty string ("").
-
-```python
-from jsoninja.core import find_value_of_element
+from jsoninja import find_value_of_element
 
 data = {"a": {"b": {"c": 42}}}
-value = find_value_of_element("c", data)
-print(value)
-```
-**Output**   
-```
-42
+print(find_value_of_element("c", data))  # 42
+print(find_value_of_element("z", data))  # "" (not found)
 ```
 
-**7. Empty All Values in a JSON Structure**
+---
 
-Use the `empty_all_the_values` function to replace all values in a nested JSON structure with empty strings (""). For invalid inputs (e.g., integers or strings), the function returns None.
+### 5️⃣ Find All Paths for a Key
+
+Returns **every** path where the target key appears — great for duplicate-key analysis.
 
 ```python
-from jsoninja.core import empty_all_the_values
+from jsoninja import find_all_paths_for_element
+
+data = {"a": 1, "b": {"a": 2}, "c": [{"a": 3}]}
+print(find_all_paths_for_element(data, "a"))
+# ["a", "b.a", "c[0].a"]
+```
+
+---
+
+### 6️⃣ Empty All Values
+
+Resets every leaf value to `""` — useful for creating JSON templates or anonymising data.
+
+```python
+from jsoninja import empty_all_the_values
 
 data = {
     "a": 1,
     "b": {"c": 42, "d": [1, 2, {"e": "hello"}]},
-    "f": [True, {"g": "world"}],
 }
-emptied_data = empty_all_the_values(data)
-print(emptied_data)
+print(empty_all_the_values(data))
 ```
-**Output**   
-```
+
+```python
 {
     "a": "",
-    "b": {"c": "", "d": ["", "", {"e": ""}]},
-    "f": ["", {"g": ""}],
+    "b": {"c": "", "d": ["", "", {"e": ""}]}
 }
 ```
-**8. Compare Two JSON Files**
 
-Use the `compare_files` function to compare two JSON files and identify differences in their structures and values. You can either pass loaded JSON objects or the paths to the JSON files. If you choose to pass file paths, set the `isPath` parameter to `True`.
+---
 
-When using file paths, ensure to use `//` as the path separator, as `/` is treated as an escape character. Alternatively, you can use a raw formatted string (e.g., `r"path/to/file.json"`).
-
-The function returns two values:
-
-1. The actual changes found between the two JSON structures.
-2. A summary of the changes.
-
-*Example with Loaded JSON Objects:*
+### 7️⃣ Validate & Format Paths
 
 ```python
-from jsoninja.compare import compare_files
+from jsoninja import validate_path, format_path
+from jsoninja.exceptions import InvalidPathError
 
-json1 = {"a": {"b": 1, "c": 2}}
-json2 = {"a": {"b": 1, "c": 3}}
+# Validation
+try:
+    validate_path("a.b[1]")         # returns True
+    validate_path("a.b[1")          # raises InvalidPathError (mismatched brackets)
+except InvalidPathError as e:
+    print(f"Error: {e}")
+
+# Human-readable formatting
+print(format_path("user.address.city"))   # user -> address -> city
+print(format_path("a.b[1]"))             # a -> b[1]
+```
+
+---
+
+### 8️⃣ Compare Two JSON Structures
+
+Diff two JSON objects or files and receive a structured list of changes plus a summary.
+
+```python
+from jsoninja import compare_files
+
+json1 = {"a": {"b": 1, "c": 2}, "d": [1, 2]}
+json2 = {"a": {"b": 1, "c": 99}, "d": [1, 2, 3], "e": "new"}
 
 changes, summary = compare_files(json1, json2)
-print("Changes:", changes)
-print("Summary:", summary)
+
+print(summary)
+# {"added": 2, "removed": 0, "changed": 1, "type_changed": 0, "unknown": 0}
+
+for change in changes:
+    print(change)
+# {"type": "changed",  "path": "a-->c", "old_value": 2,    "new_value": 99}
+# {"type": "added",    "path": "d[2]",  "new_value": 3}
+# {"type": "added",    "path": "e",     "new_value": "new"}
 ```
-*Example with File Paths:*
+
+**Compare from file paths:**
 
 ```python
-from jsoninja.compare import compare_files
-# Use any one of the methods below for specifiying path
-file1_path = "path//to//first.json"  # Using // as the path separator
-file2_path = r"path/to/second.json"   # Using a raw formatted string
-
-changes, summary = compare_files(file1_path, file2_path, isPath=True)
-print("Changes:", changes)
-print("Summary:", summary)
-```
-In this case, ensure that the `isPath` parameter is set to `True` to indicate that you are passing file paths instead of loaded JSON objects
-
-## **Customization**
-
-You can customize the separator used in the functions by passing a value to the `separator` parameter.
-
-**Example**
-
-Suppose you want to use `*` as the separator with the `traverse_json` function.
-
-```python
-from jsoninja.core import traverse_json
-
-data = {"a": {"b": [1, 2], "c": 3}}
-
-for path, value in traverse_json(data, seperator=*):
-    print(f"Path: {path}, Value: {value}")
+changes, summary = compare_files(
+    r"path/to/old.json",
+    r"path/to/new.json",
+    isPath=True
+)
 ```
 
-**Output**
-```
-Path: a*b[0], Value: 1
-Path: a*b[1], Value: 2
-Path: a*c, Value: 3 
-```
-## Contributing
+> **Note:** When passing file paths as strings, use raw strings (`r"..."`) or double backslashes (`\\`) to avoid escape-sequence issues.
 
-Contributions to JSONavigator are welcome! To contribute: 
+**Change types returned:**
 
-- Fork the repository on GitHub.
-- Clone your fork locally:
+| Type | Meaning |
+|---|---|
+| `added` | Key/value exists in JSON 2 but not JSON 1 |
+| `removed` | Key/value exists in JSON 1 but not JSON 2 |
+| `changed` | Same path, different value |
+| `type_changed` | Same path, different Python type |
+
+---
+
+## 🗂️ Project Structure
+
+```
+JSONavigator/
+├── jsoninja/
+│   ├── __init__.py        # Public API surface
+│   ├── core.py            # traverse, get, find, empty functions
+│   ├── utils.py           # flatten, validate, format helpers
+│   ├── compare.py         # JSON diff engine
+│   └── exceptions.py      # Custom exception hierarchy
+├── tests/
+│   ├── test_core.py       # 30+ core function tests
+│   ├── test_compare.py    # Compare module tests
+│   ├── test_utils.py      # Utility function tests
+│   └── conftest.py        # pytest fixtures
+├── .github/workflows/
+│   └── publish-to-pypi.yml  # Automated PyPI release CI
+├── requirements.txt       # Dev/test dependencies
+├── setup.py
+└── README.md
+```
+
+---
+
+## 🛠️ Package Reference
+
+### `jsoninja.core`
+
+| Function | Signature | Returns |
+|---|---|---|
+| `traverse_json` | `(data, parent_key='', separator='.')` | Generator of `(path, value)` |
+| `get_value_at_path` | `(data, path, separator='.')` | Value at the path |
+| `find_value_of_element` | `(target_key, data)` | First matched value or `""` |
+| `find_all_paths_for_element` | `(file_data, target_key, path='', separator='.')` | `list[str]` of all paths |
+| `empty_all_the_values` | `(data)` | Mutated `data` with `""` leaves, or `None` |
+
+### `jsoninja.utils`
+
+| Function | Signature | Returns |
+|---|---|---|
+| `flatten_json` | `(data, parent_key='', separator='.')` | Flat `dict` |
+| `validate_path` | `(path, separator='.')` | `True` or raises `InvalidPathError` |
+| `format_path` | `(path, separator='.')` | Human-readable path string |
+
+### `jsoninja.compare`
+
+| Function | Signature | Returns |
+|---|---|---|
+| `compare_files` | `(file1, file2, separator='-->', isPath=False)` | `(changes_list, summary_dict)` |
+
+### `jsoninja.exceptions`
+
+| Exception | When raised |
+|---|---|
+| `InvalidPathError` | Malformed path string passed to `validate_path` / `format_path` |
+| `ElementNotFoundError` | Target element absent from JSON structure |
+| `JSONStructureError` | Unexpected JSON structure type |
+
+---
+
+## 💡 Use Cases
+
+- 🔬 **API response inspection** — quickly explore the shape of deeply nested API payloads.
+- 🧪 **Test assertion helpers** — flatten and validate JSON responses in pytest fixtures.
+- 📋 **Config file diffing** — compare application config files between environments.
+- 🏗️ **JSON schema generation** — traverse and collect all paths to infer structure.
+- 🕵️ **Data anonymisation** — `empty_all_the_values` strips sensitive data for safe sharing.
+- 📥 **ETL pipelines** — flatten nested JSON before inserting into relational databases.
+
+---
+
+## 🔧 Development Setup
+
 ```bash
+# 1. Clone the repository
 git clone https://github.com/Nikhil-Singh-2503/JSONavigator.git
-```
-- Create a new branch for your feature or bugfix:
-```bash
-git checkout -b feature-name
-```
-- Make your changes and write tests if applicable.
+cd JSONavigator
 
-- Run the tests to ensure everything works:
-```bash
+# 2. Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate       # Windows: venv\Scripts\activate
+
+# 3. Install development dependencies
+pip install -r requirements.txt
+
+# 4. Run the tests
 pytest
+
+# 5. Run with coverage report
+pytest --cov=jsoninja --cov-report=term-missing
 ```
-- Commit your changes and push them to your fork:
+
+---
+
+## 🧪 Testing
+
+The test suite covers all public functions with 30+ unit tests using `pytest`.
+
 ```bash
-git commit -m "Add feature or fix"
-git push origin feature-name
+# All tests
+pytest
+
+# Specific module
+pytest tests/test_core.py
+pytest tests/test_compare.py
+pytest tests/test_utils.py
+
+# With HTML coverage report
+pytest --cov=jsoninja --cov-report=html
 ```
-- Open a pull request on the main repository.
 
-## Running Tests
+---
 
-To run the test suite, use `pytest`:
+## 🤝 Contributing
 
-```bash
-  pytest
-```
-For coverage reports, install `pytest-cov` and run:
-```bash
-  pytest --cov=JSONavigator
-```
-## License
-This project is licensed under the MIT License.
+Contributions are warmly welcome! Here's how to get started:
 
+1. **Fork** the repository on GitHub.
+2. **Clone** your fork:
+   ```bash
+   git clone https://github.com/<your-username>/JSONavigator.git
+   ```
+3. **Create** a feature branch:
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+4. **Make changes** and add tests for any new functionality.
+5. **Run tests** to make sure everything passes:
+   ```bash
+   pytest
+   ```
+6. **Commit** and **push** your changes:
+   ```bash
+   git commit -m "feat: add my-feature"
+   git push origin feature/my-feature
+   ```
+7. Open a **Pull Request** against the `main` branch.
 
+Please follow the existing code style and write docstrings for any new functions.
 
-## Contact
+---
 
-If you have any questions or need support, feel free to reach out:
+## 🚀 Roadmap
 
-- Email: nikhilraj7654@gmail.com 
+- [ ] `set_value_at_path` — update a value at a given path in place
+- [ ] `delete_key` — remove a key anywhere in the structure
+- [ ] JSONPath (`$`) query syntax support
+- [ ] Async-friendly streaming traversal for large JSON files
+- [ ] Type-annotated stubs (`py.typed` marker)
+- [ ] `compare_files` — side-by-side HTML diff report
 
-## Acknowledgements
+---
 
-- Inspired by the need to simplify working with nested JSON structures.
-- Built with ❤️ using Python.
-     
-## Additional Notes 
+## 📄 License
 
-- Ensure you have Python 3.8 or higher installed to use this package.
-- For more examples and advanced usage, refer to the [Github](https://github.com/Nikhil-Singh-2503) repository .
+This project is licensed under the **MIT License** — see the [LICENSE](https://github.com/Nikhil-Singh-2503/JSONavigator/blob/main/LICENSE) file for details.
+
+---
+
+## 👤 Author
+
+**Nikhil Singh**
+
+- 📧 Email: [nikhilraj7654@gmail.com](mailto:nikhilraj7654@gmail.com)
+- 🐙 GitHub: [@Nikhil-Singh-2503](https://github.com/Nikhil-Singh-2503)
+- 📦 PyPI: [jsonavigator](https://pypi.org/project/jsonavigator/)
+
+---
+
+## ⭐ Star the Repo
+
+If JSONavigator saves you time, please consider giving it a ⭐ on GitHub — it helps others discover the project!
+
+---
+
+<div align="center">
+  Built with ❤️ using Python &nbsp;|&nbsp; <a href="https://pypi.org/project/jsonavigator/">PyPI</a> &nbsp;|&nbsp; <a href="https://github.com/Nikhil-Singh-2503/JSONavigator">GitHub</a>
+</div>
