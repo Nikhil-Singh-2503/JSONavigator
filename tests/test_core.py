@@ -1,6 +1,6 @@
 import pytest
 from jsoninja.core import *
-from jsoninja.exceptions import InvalidDataTypeError, KeyNotFoundError, IndexOutOfRangeError
+from jsoninja.exceptions import InvalidDataTypeError, KeyNotFoundError, IndexOutOfRangeError, InvalidPathError
 
 def test_traverse_json():
     data = {"a": {"b": [1, 2], "c": 3}}
@@ -271,3 +271,91 @@ def test_find_value_falsy_matches():
     assert find_value_of_element("b", data) == 0
     assert find_value_of_element("c", data) is False
     assert find_value_of_element("d", data) == ""
+
+
+# --- Tests for set_value_at_path ---
+
+def test_set_value_at_path_dict():
+    data = {"a": {"b": 1, "c": 2}}
+    assert set_value_at_path(data, "a.b", 99) == {"a": {"b": 99, "c": 2}}
+    assert data["a"]["b"] == 99  # mutates in place
+
+def test_set_value_at_path_list():
+    data = {"user": {"scores": [10, 20]}}
+    assert set_value_at_path(data, "user.scores[1]", 99) == {"user": {"scores": [10, 99]}}
+
+def test_set_value_at_path_new_key():
+    data = {"a": {"b": 1}}
+    assert set_value_at_path(data, "a.c", 2) == {"a": {"b": 1, "c": 2}}
+
+def test_set_value_at_path_exceptions():
+    data = {"a": {"b": [1, 2]}}
+    # Invalid path
+    with pytest.raises(InvalidPathError):
+        set_value_at_path(data, "", 99)
+    # Missing parent key
+    with pytest.raises(KeyNotFoundError):
+        set_value_at_path(data, "x.y", 99)
+    # Index out of range
+    with pytest.raises(IndexOutOfRangeError):
+        set_value_at_path(data, "a.b[5]", 99)
+    # Bad access type
+    with pytest.raises(InvalidDataTypeError):
+        set_value_at_path(data, "a.b.c", 99)
+
+
+# --- Tests for delete_at_path ---
+
+def test_delete_at_path_dict():
+    data = {"a": {"b": 1, "c": 2}}
+    assert delete_at_path(data, "a.b") == {"a": {"c": 2}}
+
+def test_delete_at_path_list():
+    data = {"a": [10, 20, 30]}
+    assert delete_at_path(data, "a[1]") == {"a": [10, 30]}
+
+def test_delete_at_path_exceptions():
+    data = {"a": {"b": [1, 2]}}
+    # Invalid path
+    with pytest.raises(InvalidPathError):
+        delete_at_path(data, "")
+    # Missing parent key
+    with pytest.raises(KeyNotFoundError):
+        delete_at_path(data, "x.y")
+    # Missing target key
+    with pytest.raises(KeyNotFoundError):
+        delete_at_path(data, "a.c")
+    # Index out of range
+    with pytest.raises(IndexOutOfRangeError):
+        delete_at_path(data, "a.b[5]")
+
+
+# --- Tests for delete_key ---
+
+def test_delete_key_flat():
+    data = {"id": 1, "name": "Alice"}
+    assert delete_key(data, "id") == {"name": "Alice"}
+
+def test_delete_key_nested():
+    data = {"id": 1, "user": {"id": 2, "name": "Alice"}}
+    assert delete_key(data, "id") == {"user": {"name": "Alice"}}
+
+def test_delete_key_list():
+    data = [{"id": 1, "val": "a"}, {"id": 2, "val": "b"}]
+    assert delete_key(data, "id") == [{"val": "a"}, {"val": "b"}]
+
+def test_delete_key_mixed():
+    data = {
+        "id": 1,
+        "items": [
+            {"id": 2, "name": "item1"},
+            {"id": 3, "name": "item2", "details": {"id": 4, "desc": "none"}}
+        ]
+    }
+    expected = {
+        "items": [
+            {"name": "item1"},
+            {"name": "item2", "details": {"desc": "none"}}
+        ]
+    }
+    assert delete_key(data, "id") == expected

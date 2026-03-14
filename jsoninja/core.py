@@ -1,5 +1,5 @@
 import re
-from .exceptions import KeyNotFoundError, IndexOutOfRangeError, InvalidDataTypeError
+from .exceptions import KeyNotFoundError, IndexOutOfRangeError, InvalidDataTypeError, InvalidPathError
 
 def traverse_json(data, parent_key='', separator='.'):
     """
@@ -146,3 +146,140 @@ def empty_all_the_values(data):
             else:
                 data[i] = ""
         return data
+
+
+def set_value_at_path(data, path, new_value, separator='.'):
+    """
+    Update a leaf value at a given dot-notation path.
+    :param data: The JSON data (dict or list).
+    :param path: The path to the desired element.
+    :param new_value: The value to set.
+    :param separator: The separator used in the path.
+    :return: The mutated JSON data.
+    """
+    pattern = re.compile(rf'[^{re.escape(separator)}\[\]]+|\[\d+\]')
+    components = pattern.findall(path)
+    
+    if not components:
+        raise InvalidPathError("Path cannot be empty or invalid.")
+        
+    current = data
+    
+    # Traverse to the parent of the target node
+    for component in components[:-1]:
+        if component.startswith('[') and component.endswith(']'):
+            index = int(component[1:-1])
+            if isinstance(current, list):
+                try:
+                    current = current[index]
+                except IndexError:
+                    raise IndexOutOfRangeError(index)
+            else:
+                raise InvalidDataTypeError(type(current).__name__, f"Index {index} accessed on non-list.")
+        else:
+            if isinstance(current, dict):
+                try:
+                    current = current[component]
+                except KeyError:
+                    raise KeyNotFoundError(component)
+            else:
+                raise InvalidDataTypeError(type(current).__name__, f"Key {component} accessed on non-dictionary.")
+                
+    # Modify the target node
+    last_component = components[-1]
+    if last_component.startswith('[') and last_component.endswith(']'):
+        index = int(last_component[1:-1])
+        if isinstance(current, list):
+            try:
+                current[index] = new_value
+            except IndexError:
+                raise IndexOutOfRangeError(index)
+        else:
+            raise InvalidDataTypeError(type(current).__name__, f"Index {index} accessed on non-list.")
+    else:
+        if isinstance(current, dict):
+            current[last_component] = new_value
+        else:
+            raise InvalidDataTypeError(type(current).__name__, f"Key {last_component} accessed on non-dictionary.")
+            
+    return data
+
+
+def delete_at_path(data, path, separator='.'):
+    """
+    Remove the key/index at the given path from the structure.
+    :param data: The JSON data (dict or list).
+    :param path: The path to the element to delete.
+    :param separator: The separator used in the path.
+    :return: The mutated JSON data.
+    """
+    pattern = re.compile(rf'[^{re.escape(separator)}\[\]]+|\[\d+\]')
+    components = pattern.findall(path)
+    
+    if not components:
+        raise InvalidPathError("Path cannot be empty or invalid.")
+        
+    current = data
+    
+    # Traverse to the parent of the target node
+    for component in components[:-1]:
+        if component.startswith('[') and component.endswith(']'):
+            index = int(component[1:-1])
+            if isinstance(current, list):
+                try:
+                    current = current[index]
+                except IndexError:
+                    raise IndexOutOfRangeError(index)
+            else:
+                raise InvalidDataTypeError(type(current).__name__, f"Index {index} accessed on non-list.")
+        else:
+            if isinstance(current, dict):
+                try:
+                    current = current[component]
+                except KeyError:
+                    raise KeyNotFoundError(component)
+            else:
+                raise InvalidDataTypeError(type(current).__name__, f"Key {component} accessed on non-dictionary.")
+                
+    # Delete the target node
+    last_component = components[-1]
+    if last_component.startswith('[') and last_component.endswith(']'):
+        index = int(last_component[1:-1])
+        if isinstance(current, list):
+            try:
+                current.pop(index)
+            except IndexError:
+                raise IndexOutOfRangeError(index)
+        else:
+            raise InvalidDataTypeError(type(current).__name__, f"Index {index} accessed on non-list.")
+    else:
+        if isinstance(current, dict):
+            try:
+                del current[last_component]
+            except KeyError:
+                raise KeyNotFoundError(last_component)
+        else:
+            raise InvalidDataTypeError(type(current).__name__, f"Key {last_component} accessed on non-dictionary.")
+            
+    return data
+
+
+def delete_key(data, target_key):
+    """
+    Recursively remove every occurrence of a key name anywhere in the structure.
+    :param data: The JSON data (dict or list).
+    :param target_key: The target key to remove.
+    :return: The mutated JSON data.
+    """
+    if isinstance(data, dict):
+        if target_key in data:
+            del data[target_key]
+        for key, value in list(data.items()):
+            if isinstance(value, (dict, list)):
+                delete_key(value, target_key)
+    elif isinstance(data, list):
+        for item in data:
+            if isinstance(item, (dict, list)):
+                delete_key(item, target_key)
+                
+    return data

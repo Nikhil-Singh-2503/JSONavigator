@@ -4,7 +4,10 @@ from jsoninja.core import (
     get_value_at_path,
     find_all_paths_for_element,
     find_value_of_element,
-    empty_all_the_values
+    empty_all_the_values,
+    set_value_at_path,
+    delete_at_path,
+    delete_key
 )
 
 # Import utils functions from the utils module
@@ -47,7 +50,10 @@ __all__ = [
     "validate_path",
     "format_path",
     "flatten_json",
-    "compare_files"
+    "compare_files",
+    "set_value_at_path",
+    "delete_at_path",
+    "delete_key"
 ]
 
 import importlib.metadata
