@@ -1,5 +1,5 @@
 import pytest
-from jsoninja.exceptions import InvalidPathError
+from jsoninja.exceptions import InvalidPathError, InvalidDataTypeError
 from jsoninja.utils import (
     validate_path,
     format_path,
@@ -83,3 +83,11 @@ def test_flatten_json_nested_lists():
         "a[1].c": 2
     }
     assert flatten_json(data) == expected
+
+def test_flatten_json_invalid_input():
+    """
+    Test flattening an invalid input (not a dict or list).
+    """
+    with pytest.raises(InvalidDataTypeError):
+        flatten_json("invalid_input")
+

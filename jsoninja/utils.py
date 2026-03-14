@@ -1,4 +1,4 @@
-from .exceptions import InvalidPathError
+from .exceptions import InvalidPathError, InvalidDataTypeError
 
 def validate_path(path, separator='.'):
     """
@@ -46,6 +46,9 @@ def flatten_json(data, parent_key='', separator='.'):
     :param separator: The separator to join keys.
     :return: A flattened dictionary.
     """
+    if not parent_key and not isinstance(data, (dict, list)):
+        raise InvalidDataTypeError(type(data).__name__, "Root data must be a dictionary or list.")
+        
     items = {}
     if isinstance(data, dict):
         for key, value in data.items():

@@ -1,4 +1,6 @@
 import json, os
+import warnings
+from .exceptions import JSONFileNotFoundError, JSONParseError
 
 def load_json_file(file_path):
     """Load and parse JSON file from the given path."""
@@ -6,12 +8,12 @@ def load_json_file(file_path):
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 return json.load(file)
-        except:
-            return {}
+        except Exception:
+            raise JSONParseError(f"Failed to parse JSON file at path: {file_path}")
     else:
-        return {}
+        raise JSONFileNotFoundError(file_path, "JSON file not found.")
     
-def _format_path(path, seperator):
+def _format_path(path, separator):
     """Helper to format path list as a string."""
     if not path:
         return 'root'
@@ -21,11 +23,11 @@ def _format_path(path, seperator):
             formatted += f'[{p}]'
         else:
             if formatted:
-                formatted += seperator
+                formatted += separator
             formatted += str(p)
     return formatted
 
-def _compare_json(json1, json2, path=None, differences=None, seperator='-->'):
+def _compare_json(json1, json2, path=None, differences=None, separator='-->'):
     """Recursive function to compare two JSON objects and collect differences."""
     if path is None:
         path = []
@@ -36,7 +38,7 @@ def _compare_json(json1, json2, path=None, differences=None, seperator='-->'):
     if type(json1) != type(json2):
         differences.append({
             'type': 'type_changed',
-            'path': _format_path(path, seperator),
+            'path': _format_path(path, separator),
             'old_value': json1,
             'new_value': json2
         })
@@ -50,19 +52,19 @@ def _compare_json(json1, json2, path=None, differences=None, seperator='-->'):
         for key in keys1 - keys2:
             differences.append({
                 'type': 'removed',
-                'path': _format_path(path + [key], seperator),
+                'path': _format_path(path + [key], separator),
                 'old_value': json1[key],
                 'new_value': None
             })
         for key in keys2 - keys1:
             differences.append({
                 'type': 'added',
-                'path': _format_path(path + [key], seperator),
+                'path': _format_path(path + [key], separator),
                 'old_value': None,
                 'new_value': json2[key]
             })
         for key in keys1 & keys2:
-            _compare_json(json1[key], json2[key], path + [key], differences, seperator)
+            _compare_json(json1[key], json2[key], path + [key], differences, separator)
 
     # If both are lists
     elif isinstance(json1, list):
@@ -71,13 +73,13 @@ def _compare_json(json1, json2, path=None, differences=None, seperator='-->'):
         min_len = min(len1, len2)
         # Compare overlapping indexes
         for i in range(min_len):
-            _compare_json(json1[i], json2[i], path + [i], differences, seperator)
+            _compare_json(json1[i], json2[i], path + [i], differences, separator)
         # Additional items removed
         if len1 > len2:
             for i in range(len2, len1):
                 differences.append({
                     'type': 'removed',
-                    'path': _format_path(path + [i], seperator),
+                    'path': _format_path(path + [i], separator),
                     'old_value': json1[i],
                     'new_value': None
                 })
@@ -86,7 +88,7 @@ def _compare_json(json1, json2, path=None, differences=None, seperator='-->'):
             for i in range(len1, len2):
                 differences.append({
                     'type': 'added',
-                    'path': _format_path(path + [i], seperator),
+                    'path': _format_path(path + [i], separator),
                     'old_value': None,
                     'new_value': json2[i]
                 })
@@ -95,14 +97,14 @@ def _compare_json(json1, json2, path=None, differences=None, seperator='-->'):
         if json1 != json2:
             differences.append({
                 'type': 'changed',
-                'path': _format_path(path, seperator),
+                'path': _format_path(path, separator),
                 'old_value': json1,
                 'new_value': json2
             })
 
     return differences
 
-def compare_json(json1, json2, seperator='-->'):
+def compare_json(json1, json2, separator=None, seperator=None):
     """
     Compare two JSON objects (parsed) and return a list of dict differences.
     Each difference dict contains:
@@ -111,7 +113,12 @@ def compare_json(json1, json2, seperator='-->'):
       - old_value: value in first JSON or None if added
       - new_value: value in second JSON or None if removed
     """
-    return _compare_json(json1, json2, seperator=seperator)
+    if seperator is not None:
+        warnings.warn("The 'seperator' parameter is deprecated, use 'separator' instead.", DeprecationWarning, stacklevel=2)
+        separator = seperator
+    elif separator is None:
+        separator = '-->'
+    return _compare_json(json1, json2, separator=separator)
 
 
 def format_differences(differences):
@@ -175,14 +182,20 @@ def format_differences(differences):
     return output, summary
 
 
-def compare_files(file1, file2, seperator='-->', isPath = False):
+def compare_files(file1, file2, separator=None, isPath=False, seperator=None):
     """Load two JSON files, compare them and return a formatted difference string."""
+    if seperator is not None:
+        warnings.warn("The 'seperator' parameter is deprecated, use 'separator' instead.", DeprecationWarning, stacklevel=2)
+        separator = seperator
+    elif separator is None:
+        separator = '-->'
+
     if isPath:
         json1 = load_json_file(file1)
         json2 = load_json_file(file2)
     else:
         json1 = file1
         json2 = file2
-    differences = compare_json(json1, json2, seperator)
+    differences = compare_json(json1, json2, separator=separator)
     output, summary =  format_differences(differences)
     return output, summary

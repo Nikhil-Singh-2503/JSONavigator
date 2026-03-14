@@ -1,5 +1,6 @@
 import pytest
 from jsoninja.core import *
+from jsoninja.exceptions import InvalidDataTypeError, KeyNotFoundError, IndexOutOfRangeError
 
 def test_traverse_json():
     data = {"a": {"b": [1, 2], "c": 3}}
@@ -14,6 +15,19 @@ def test_get_value_at_path():
     data = {"a": {"b": [1, 2], "c": 3}}
     assert get_value_at_path(data, "a.b[1]") == 2
     assert get_value_at_path(data, "a.c") == 3
+
+def test_get_value_at_path_exceptions():
+    data = {"a": {"b": [1, 2], "c": 3}}
+    # Missing key
+    with pytest.raises(KeyNotFoundError):
+        get_value_at_path(data, "a.z")
+    # Index out of range
+    with pytest.raises(IndexOutOfRangeError):
+        get_value_at_path(data, "a.b[5]")
+    # Bad access (index on dict)
+    with pytest.raises(InvalidDataTypeError):
+        get_value_at_path(data, "a.c[0]")
+
 
 # Test Case: Key Found in a Flat Dictionary
 def test_find_value_in_flat_dict():
@@ -172,8 +186,8 @@ def test_find_all_paths_in_empty_data():
 # Test Case: Non-Dict/Non-List Input
 def test_find_all_paths_in_non_dict_non_list():
     data = "invalid"
-    result = find_all_paths_for_element(data, "a")
-    assert result == []
+    with pytest.raises(InvalidDataTypeError):
+        find_all_paths_for_element(data, "a")
 
 # Test Case: Custom Separator
 def test_find_all_paths_with_custom_separator():
@@ -181,12 +195,10 @@ def test_find_all_paths_with_custom_separator():
     result = find_all_paths_for_element(data, "c", separator="/")
     assert result == ["a/b/c"]
 
-# Test Case: Exception Handling
 def test_find_all_paths_exception_handling():
-    data = {"a": {"b": {"c": 42}}}
     # Simulate an exception by passing an invalid data type
-    result = find_all_paths_for_element("invalid_data", "c")
-    assert result == []
+    with pytest.raises(InvalidDataTypeError):
+        find_all_paths_for_element("invalid_data", "c")
 
 
 
@@ -244,11 +256,18 @@ def test_empty_already_empty_list():
 # Test Case: Handle Non-Dict/Non-List Input
 def test_empty_non_dict_non_list():
     data = "invalid"
-    assert empty_all_the_values(data) is None
+    with pytest.raises(InvalidDataTypeError):
+        empty_all_the_values(data)
 
 # Test Case: Exception Handling
 def test_empty_exception_handling():
-    data = {"a": {"b": 42}}
     # Simulate an exception by passing an invalid input type
-    result = empty_all_the_values(123)
-    assert result is None
+    with pytest.raises(InvalidDataTypeError):
+        empty_all_the_values(123)
+
+# Test Case: Falsy matches shouldn't be ignored
+def test_find_value_falsy_matches():
+    data = {"a": {"b": 0, "c": False, "d": ""}}
+    assert find_value_of_element("b", data) == 0
+    assert find_value_of_element("c", data) is False
+    assert find_value_of_element("d", data) == ""

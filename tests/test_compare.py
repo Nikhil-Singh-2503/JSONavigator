@@ -2,6 +2,7 @@ import json
 import os
 import pytest
 from jsoninja.compare import compare_files
+from jsoninja.exceptions import JSONFileNotFoundError, JSONParseError
 
 @pytest.fixture
 def create_temp_json_files():
@@ -70,3 +71,18 @@ def test_compare_files_removed_key(create_temp_json_files):
     assert summary['removed'] == 0
     assert summary['changed'] == 1
     assert summary['type_changed'] == 0
+
+def test_compare_files_missing_file():
+    """Test comparing JSON files where one is missing."""
+    with pytest.raises(JSONFileNotFoundError):
+        compare_files('non_existent.json', 'test1.json', isPath=True)
+
+def test_compare_files_parse_error(create_temp_json_files):
+    """Test comparing JSON files where one has invalid JSON structure."""
+    with open('invalid.json', 'w') as f:
+        f.write("{invalid json format]")
+        
+    with pytest.raises(JSONParseError):
+        compare_files('invalid.json', 'test1.json', isPath=True)
+        
+    os.remove('invalid.json')
