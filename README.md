@@ -34,6 +34,9 @@ Working with deeply nested JSON in Python is painful. Standard `dict` access bre
 | 🔍 **Traverse** | `traverse_json` | Recursively yield every `(path, value)` pair |
 | 📦 **Flatten** | `flatten_json` | Collapse nested JSON into a single-level dict |
 | 🎯 **Get by path** | `get_value_at_path` | Retrieve a value using a dot-notation path |
+| ✍️ **Set by path** | `set_value_at_path` | Update or set a value at a dot-notation path |
+| 🗑️ **Delete by path** | `delete_at_path` | Remove a key/index at a dot-notation path |
+| 🧹 **Delete key** | `delete_key` | Recursively remove every occurrence of a key |
 | 🔎 **Find value** | `find_value_of_element` | Search for first occurrence of a key, anywhere |
 | 🗺️ **Find all paths** | `find_all_paths_for_element` | Get every path where a key exists |
 | 🧹 **Clear values** | `empty_all_the_values` | Reset all leaf values to `""` in-place |
@@ -105,6 +108,8 @@ flat = flatten_json(data)
 ## 📖 Usage Guide
 
 ### 1️⃣ Traverse Nested JSON
+<details>
+<summary>View Details</summary>
 
 Yields `(path, value)` tuples for every leaf node. Supports mixed dicts and lists.
 
@@ -129,9 +134,13 @@ Path: a.c, Value: 3
 > traverse_json(data, separator="/")  # a/b[0], a/b[1], a/c
 > ```
 
+</details>
+
 ---
 
 ### 2️⃣ Get Value at a Specific Path
+<details>
+<summary>View Details</summary>
 
 ```python
 from jsoninja import get_value_at_path
@@ -142,9 +151,49 @@ print(get_value_at_path(data, "a.b[2]"))   # 30
 print(get_value_at_path(data, "a.b[0]"))   # 10
 ```
 
+</details>
+
 ---
 
-### 3️⃣ Flatten JSON
+### 3️⃣ Set Value at a Specific Path
+<details>
+<summary>View Details</summary>
+
+Update or create a leaf value using dot notation, modifying the dict in place.
+
+```python
+from jsoninja import set_value_at_path
+
+data = {"user": {"scores": [10, 20]}}
+set_value_at_path(data, "user.scores[1]", 99)
+print(data)  # {"user": {"scores": [10, 99]}}
+```
+
+</details>
+
+---
+
+### 4️⃣ Delete Value at a Specific Path
+<details>
+<summary>View Details</summary>
+
+Delete a key or pop an index at the specified path.
+
+```python
+from jsoninja import delete_at_path
+
+data = {"a": {"b": 1, "c": 2}}
+delete_at_path(data, "a.b")
+print(data)  # {"a": {"c": 2}}
+```
+
+</details>
+
+---
+
+### 5️⃣ Flatten JSON
+<details>
+<summary>View Details</summary>
 
 Collapses any depth of nesting into a flat `{path: value}` dictionary.
 
@@ -163,9 +212,13 @@ print(flatten_json(data))
 }
 ```
 
+</details>
+
 ---
 
-### 4️⃣ Find a Value by Key
+### 6️⃣ Find a Value by Key
+<details>
+<summary>View Details</summary>
 
 Returns the first occurrence of a key anywhere in the structure.
 
@@ -177,9 +230,13 @@ print(find_value_of_element("c", data))  # 42
 print(find_value_of_element("z", data))  # "" (not found)
 ```
 
+</details>
+
 ---
 
-### 5️⃣ Find All Paths for a Key
+### 7️⃣ Find All Paths for a Key
+<details>
+<summary>View Details</summary>
 
 Returns **every** path where the target key appears — great for duplicate-key analysis.
 
@@ -191,9 +248,13 @@ print(find_all_paths_for_element(data, "a"))
 # ["a", "b.a", "c[0].a"]
 ```
 
+</details>
+
 ---
 
-### 6️⃣ Empty All Values
+### 8️⃣ Empty All Values
+<details>
+<summary>View Details</summary>
 
 Resets every leaf value to `""` — useful for creating JSON templates or anonymising data.
 
@@ -214,9 +275,31 @@ print(empty_all_the_values(data))
 }
 ```
 
+</details>
+
 ---
 
-### 7️⃣ Validate & Format Paths
+### 9️⃣ Recursively Delete a Key
+<details>
+<summary>View Details</summary>
+
+Recursively remove every occurrence of a key name anywhere in the nested object.
+
+```python
+from jsoninja import delete_key
+
+data = {"id": 1, "user": {"id": 2, "name": "Alice"}}
+delete_key(data, "id")
+print(data)  # {"user": {"name": "Alice"}}
+```
+
+</details>
+
+---
+
+### 🔟 Validate & Format Paths
+<details>
+<summary>View Details</summary>
 
 ```python
 from jsoninja import validate_path, format_path
@@ -234,9 +317,13 @@ print(format_path("user.address.city"))   # user -> address -> city
 print(format_path("a.b[1]"))             # a -> b[1]
 ```
 
+</details>
+
 ---
 
-### 8️⃣ Compare Two JSON Structures
+### 1️⃣1️⃣ Compare Two JSON Structures
+<details>
+<summary>View Details</summary>
 
 Diff two JSON objects or files and receive a structured list of changes plus a summary.
 
@@ -279,6 +366,8 @@ changes, summary = compare_files(
 | `changed` | Same path, different value |
 | `type_changed` | Same path, different Python type |
 
+</details>
+
 ---
 
 ## 🗂️ Project Structure
@@ -313,6 +402,9 @@ JSONavigator/
 |---|---|---|
 | `traverse_json` | `(data, parent_key='', separator='.')` | Generator of `(path, value)` |
 | `get_value_at_path` | `(data, path, separator='.')` | Value at the path |
+| `set_value_at_path` | `(data, path, new_value, separator='.')` | Mutated `data` |
+| `delete_at_path` | `(data, path, separator='.')` | Mutated `data` |
+| `delete_key` | `(data, target_key)` | Mutated `data` |
 | `find_value_of_element` | `(target_key, data)` | First matched value or `""` |
 | `find_all_paths_for_element` | `(file_data, target_key, path='', separator='.')` | `list[str]` of all paths |
 | `empty_all_the_values` | `(data)` | Mutated `data` with `""` leaves, or `None` |
@@ -425,8 +517,8 @@ Please follow the existing code style and write docstrings for any new functions
 
 ## 🚀 Roadmap
 
-- [ ] `set_value_at_path` — update a value at a given path in place
-- [ ] `delete_key` — remove a key anywhere in the structure
+- [x] `set_value_at_path` — update a value at a given path in place
+- [x] `delete_key` — remove a key anywhere in the structure
 - [ ] JSONPath (`$`) query syntax support
 - [ ] Async-friendly streaming traversal for large JSON files
 - [ ] Type-annotated stubs (`py.typed` marker)
